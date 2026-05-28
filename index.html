@@ -465,4 +465,161 @@ function updateProgress(){
   document.querySelectorAll('.extras-progress p').forEach(p=>p.textContent=`${eDone} of ${eTotal} extras done`);
 }
 document.addEventListener('DOMContentLoaded', setupProgressTracking);
-</script></body></html>
+</script>
+<script>
+/* =========================================================
+   Persistent Trip Progress Save System
+   Saves completed activities, food, nightlife, extras locally
+   ========================================================= */
+(function () {
+  const STORAGE_KEY = "zak_uganda_2026_archive_progress_v1";
+
+  function loadState() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function getTrackableItems() {
+    return Array.from(document.querySelectorAll(".day-item, .ref-item, .extra-item, .detour-item, .timeline-item, .option-card, .place-card"))
+      .filter(item => item.querySelector(".item-check, .ref-check, .check, .checkbox") || item.getAttribute("onclick"));
+  }
+
+  function itemKey(item, index) {
+    const page = item.closest(".page")?.id || item.closest(".sec-panel")?.id || "archive";
+    const chapter = item.closest("[id*='chapter'], [id*='activities-'], [id*='food-'], [id*='nightlife-']")?.id || "general";
+    const text = (item.innerText || item.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140);
+    return `${page}::${chapter}::${index}::${text}`;
+  }
+
+  function setVisualDone(item, done) {
+    item.classList.toggle("done", done);
+
+    const checks = item.querySelectorAll(".item-check, .ref-check, .check, .checkbox");
+    checks.forEach(check => {
+      check.classList.toggle("checked", done);
+      check.setAttribute("aria-checked", done ? "true" : "false");
+    });
+  }
+
+  function applyProgress() {
+    const items = getTrackableItems();
+    const state = loadState();
+
+    items.forEach((item, index) => {
+      const key = item.dataset.saveKey || itemKey(item, index);
+      item.dataset.saveKey = key;
+
+      if (state[key]) setVisualDone(item, true);
+
+      if (!item.dataset.saveBound) {
+        item.dataset.saveBound = "true";
+        item.style.cursor = "pointer";
+        item.addEventListener("click", function () {
+          const current = item.classList.contains("done");
+          const next = !current;
+          setVisualDone(item, next);
+
+          const fresh = loadState();
+          if (next) fresh[key] = true;
+          else delete fresh[key];
+
+          saveState(fresh);
+          updateProgressDisplay();
+        }, true);
+      }
+    });
+
+    updateProgressDisplay();
+  }
+
+  function updateProgressDisplay() {
+    const items = getTrackableItems();
+    const done = items.filter(item => item.classList.contains("done")).length;
+    const total = items.length;
+    const pct = total ? Math.round((done / total) * 100) : 0;
+
+    document.querySelectorAll("#prog-count, .progress-count").forEach(el => {
+      el.textContent = `${done} of ${total} done`;
+    });
+
+    document.querySelectorAll("#prog-fill, .progress-fill, .fill, .native-progress-line i, .native-bar i, .progress-track-cover span").forEach(el => {
+      el.style.width = pct + "%";
+    });
+
+    document.querySelectorAll(".progress-mini div, .progress-large .progress-number, .cover-progress b, .native-cover-progress span").forEach(el => {
+      if ((el.textContent || "").match(/\d+\s+of\s+\d+\s+done/i)) {
+        el.textContent = `${done} of ${total} done`;
+      }
+    });
+
+    document.querySelectorAll(".progress-mini b, .native-cover-progress > b, .cover-progress em").forEach(el => {
+      if ((el.textContent || "").includes("%")) {
+        el.textContent = pct + "%";
+      }
+    });
+
+    window.zakTripProgress = { done, total, pct };
+  }
+
+  window.resetZakTripProgress = function () {
+    if (confirm("Reset all completed items for Zak's Uganda 2026 archive?")) {
+      localStorage.removeItem(STORAGE_KEY);
+      document.querySelectorAll(".done").forEach(item => item.classList.remove("done"));
+      document.querySelectorAll(".checked").forEach(item => item.classList.remove("checked"));
+      updateProgressDisplay();
+      alert("Trip progress has been reset.");
+    }
+  };
+
+  function addResetButton() {
+    if (document.getElementById("reset-progress-btn")) return;
+    const btn = document.createElement("button");
+    btn.id = "reset-progress-btn";
+    btn.textContent = "Reset Progress";
+    btn.onclick = window.resetZakTripProgress;
+    btn.style.cssText = `
+      position:fixed;
+      right:14px;
+      bottom:14px;
+      z-index:9999;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.68);
+      color:#f7f2ea;
+      padding:10px 13px;
+      border-radius:999px;
+      font:600 12px 'DM Sans',sans-serif;
+      backdrop-filter:blur(10px);
+      cursor:pointer;
+      opacity:.55;
+    `;
+    btn.onmouseenter = () => btn.style.opacity = "1";
+    btn.onmouseleave = () => btn.style.opacity = ".55";
+    document.body.appendChild(btn);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    applyProgress();
+    addResetButton();
+
+    // Re-apply after tab/chapter buttons reveal hidden content.
+    document.body.addEventListener("click", function () {
+      setTimeout(applyProgress, 80);
+    });
+  });
+
+  // Also run now in case this script loads after DOM is already ready.
+  if (document.readyState !== "loading") {
+    applyProgress();
+    addResetButton();
+  }
+})();
+</script>
+
+</body></html>
