@@ -1,12 +1,12 @@
-# uganda-2026-github-pages
+# Uganda 2026 Current File Mobile Fix
 
-Single-file final version with images embedded.
+This version was patched directly from the uploaded current live file: index(35).html.
 
-Updates included:
-- Sidebar Trip Progress hidden
-- Fixed active nav highlighting
-- Uiverse-inspired Go Back cover button
-- Swap / Move Planner for Activities, Food, Nightlife
-- Live Uganda Map Mode with clickable markers
-- Map marker status connected to completed timeline checkmarks
-- No assets folder needed
+Changes:
+- Mobile now uses a separate phone cover page
+- Desktop cover remains untouched
+- Mobile cover buttons are clickable
+- Activities/Food/Nightlife/Extras open the real app page
+- Sidebar becomes horizontal mobile navigation
+- Active tab highlighting is fixed
+- No assets folder required because images remain embedded in index.html
