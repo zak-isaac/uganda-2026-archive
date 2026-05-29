@@ -148,9 +148,9 @@
 .feature-hero h2{font-family:'Playfair Display',serif;font-size:38px;margin:8px 0 8px}
 .feature-hero p{color:var(--muted);margin:0}
 .countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.countdown-grid div,.Travel Stats-grid div{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:18px;padding:18px;text-align:center}
-.countdown-grid b,.Travel Stats-grid b{display:block;font-size:34px;color:var(--gold)}
-.countdown-grid span,.Travel Stats-grid span{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.08em}
+.countdown-grid div,.travel-stats-grid div{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:18px;padding:18px;text-align:center}
+.countdown-grid b,.travel-stats-grid b{display:block;font-size:34px;color:var(--gold)}
+.countdown-grid span,.travel-stats-grid span{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.08em}
 .feature-tabs{display:flex;gap:8px;overflow-x:auto;margin:18px 0}
 .feature-tabs button{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);border-radius:999px;padding:10px 14px;white-space:nowrap;cursor:pointer}
 .feature-tabs button.active{background:var(--gold);color:#050505;border-color:var(--gold);font-weight:800}
@@ -183,11 +183,11 @@
 .stamp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:28px}.stamp-grid span{border:1px dashed rgba(245,196,0,.65);border-radius:50%;padding:18px 8px;text-align:center;font-family:'DM Mono',monospace;font-size:11px;transform:rotate(-8deg)}
 .boarding-pass{display:flex;justify-content:space-between;gap:18px;align-items:center;background:linear-gradient(135deg,rgba(245,196,0,.12),rgba(255,255,255,.04))}
 .boarding-meta{display:flex;gap:12px}.boarding-meta span{border-left:1px solid var(--line);padding-left:14px;color:var(--muted)}.boarding-meta b{color:#fff;font-size:20px}
-.Travel Stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.travel-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 #archive-lock-screen{position:fixed;inset:0;z-index:999999;background:radial-gradient(circle at 50% 0,rgba(245,196,0,.18),transparent 35%),#050505;display:none;place-items:center;color:#fff}
 .lock-card{width:min(420px,90vw);border:1px solid var(--line);border-radius:28px;padding:28px;background:rgba(0,0,0,.62);text-align:center;box-shadow:0 40px 100px rgba(0,0,0,.45)}
 .lock-card h2{font-family:'Playfair Display',serif;font-size:34px;margin:0 0 8px}.lock-card input{width:100%;border:1px solid var(--line);border-radius:14px;background:#111;color:#fff;padding:14px;margin:18px 0;text-align:center;font-size:20px}
-@media(max-width:850px){.feature-hero,.map-wrap,.passport-wrap{grid-template-columns:1fr}.countdown-grid,.Travel Stats-grid{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr}.boarding-pass{display:block}.new-cards,.clear-chapters{grid-template-columns:1fr}}
+@media(max-width:850px){.feature-hero,.map-wrap,.passport-wrap{grid-template-columns:1fr}.countdown-grid,.travel-stats-grid{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr}.boarding-pass{display:block}.new-cards,.clear-chapters{grid-template-columns:1fr}}
 
 
 /* === Mobile cover full-page fix === */
@@ -998,6 +998,52 @@ button[onclick*="recap"],
 }
 </style>
 
+
+<style>
+/* === CLICK / COUNTDOWN / CLOUD FIX PACK === */
+
+/* Ensure panels can be shown by active class */
+.feature-panel{display:none!important}
+.feature-panel.active{display:block!important}
+
+/* Make feature buttons clearly clickable */
+.feature-tabs button{
+  pointer-events:auto!important;
+  position:relative!important;
+  z-index:5!important;
+}
+
+/* Cloud modal emergency visibility */
+#cloud-modal.cloud-open{
+  display:grid!important;
+}
+
+/* Better close button inside cloud modal if injected */
+.cloud-x{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-size:22px;
+  cursor:pointer;
+}
+
+/* Countdown seconds card if added dynamically */
+.countdown-grid.countdown-has-seconds{
+  grid-template-columns:repeat(5,1fr)!important;
+}
+@media(max-width:760px){
+  .countdown-grid.countdown-has-seconds{
+    grid-template-columns:repeat(2,1fr)!important;
+  }
+}
+</style>
+
 </head><body>
 
 <section class="cover clean-image2-cover" id="cover">
@@ -1622,7 +1668,7 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
     document.getElementById('feature-'+id)?.classList.add('active');
     document.querySelectorAll('.feature-tabs button').forEach(b=>b.classList.remove('active'));
     if(btn) btn.classList.add('active');
-    if(id==='Travel Stats') refreshTravel Stats();
+    if(id==='stats') refreshTravelStats();
   }
 
   function updateCountdown(){
@@ -1670,7 +1716,7 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
         if(!pending){
           write(LS.photos, existing.slice(0,60));
           input.value=''; document.getElementById('photo-caption').value='';
-          renderPhotos(); refreshTravel Stats();
+          renderPhotos(); refreshTravelStats();
         }
       };
       reader.readAsDataURL(file);
@@ -1687,7 +1733,7 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
         <div><small>${p.chapter}</small><p>${p.caption}</p></div>
       </article>`).join('') : '<p class="sub">No photos saved yet.</p>';
   }
-  window.deletePhoto=function(id){ write(LS.photos, read(LS.photos,[]).filter(p=>String(p.id)!==String(id))); renderPhotos(); refreshTravel Stats(); }
+  window.deletePhoto=function(id){ write(LS.photos, read(LS.photos,[]).filter(p=>String(p.id)!==String(id))); renderPhotos(); refreshTravelStats(); }
 
   let recorder, voiceChunks=[];
   window.startVoiceNote = async function(){
@@ -1702,7 +1748,7 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
         reader.onload=()=>{
           const arr=read(LS.journals,[]);
           arr.unshift({id:Date.now(), date:new Date().toISOString().slice(0,10), mood:'🎙 Voice Note', text:'Voice note saved', audio:reader.result});
-          write(LS.journals,arr); renderJournals(); refreshTravel Stats();
+          write(LS.journals,arr); renderJournals(); refreshTravelStats();
         };
         reader.readAsDataURL(blob);
         stream.getTracks().forEach(t=>t.stop());
@@ -1722,7 +1768,7 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
     arr.unshift({id:Date.now(),date,mood,text});
     write(LS.journals,arr);
     document.getElementById('journal-text').value='';
-    renderJournals(); refreshTravel Stats();
+    renderJournals(); refreshTravelStats();
   }
   function renderJournals(){
     const list=document.getElementById('journal-list'); if(!list) return;
@@ -1735,7 +1781,7 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
         <button class="glass-btn" onclick="deleteJournal(${j.id})">Delete</button>
       </article>`).join(''):'<p class="sub">No journal entries yet.</p>';
   }
-  window.deleteJournal=function(id){ write(LS.journals, read(LS.journals,[]).filter(j=>j.id!==id)); renderJournals(); refreshTravel Stats(); }
+  window.deleteJournal=function(id){ write(LS.journals, read(LS.journals,[]).filter(j=>j.id!==id)); renderJournals(); refreshTravelStats(); }
 
   const places=[
     ['Kampala',310,230,'Arrival, food, nightlife, family'],
@@ -1752,7 +1798,7 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
     pts.innerHTML=places.map(([n,x,y])=>`<g class="map-dot ${visited[n]?'visited':''}" onclick="togglePlace('${n}')"><circle cx="${x}" cy="${y}" r="9"/><text x="${x+13}" y="${y+5}">${n}</text></g>`).join('');
     list.innerHTML=places.map(([n,x,y,d])=>`<div class="map-place ${visited[n]?'visited':''}" onclick="togglePlace('${n}')"><b>${visited[n]?'✓ ':''}${n}</b><p>${d}</p></div>`).join('');
   }
-  window.togglePlace=function(n){ const v=read(LS.map,{}); v[n]=!v[n]; write(LS.map,v); renderMap(); refreshTravel Stats(); }
+  window.togglePlace=function(n){ const v=read(LS.map,{}); v[n]=!v[n]; write(LS.map,v); renderMap(); refreshTravelStats(); }
 
   window.saveSong=function(){
     const title=document.getElementById('song-title').value.trim();
@@ -1763,16 +1809,16 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
     arr.unshift({id:Date.now(),title,link,vibe});
     write(LS.songs,arr);
     document.getElementById('song-title').value=''; document.getElementById('song-link').value='';
-    renderSongs(); refreshTravel Stats();
+    renderSongs(); refreshTravelStats();
   }
   function renderSongs(){
     const list=document.getElementById('music-list'); if(!list) return;
     const arr=read(LS.songs,[]);
     list.innerHTML=arr.length?arr.map(s=>`<article class="music-entry"><h4>${s.vibe} · ${s.title}</h4>${s.link?`<a href="${s.link}" target="_blank" rel="noopener">Open soundtrack</a>`:''}<br><button class="glass-btn" onclick="deleteSong(${s.id})">Delete</button></article>`).join(''):'<p class="sub">No soundtrack items yet.</p>';
   }
-  window.deleteSong=function(id){ write(LS.songs, read(LS.songs,[]).filter(s=>s.id!==id)); renderSongs(); refreshTravel Stats(); }
+  window.deleteSong=function(id){ write(LS.songs, read(LS.songs,[]).filter(s=>s.id!==id)); renderSongs(); refreshTravelStats(); }
 
-  window.refreshTravel Stats=function(){
+  window.refreshTravelStats=function(){
     const progress=window.zakTripProgress || {};
     const pct=progress.pct ?? Math.round(([...document.querySelectorAll('.done')].length / Math.max(1,document.querySelectorAll('.timeline-body li,.extra-item').length))*100);
     document.getElementById('Travel Stats-completed')&&(document.getElementById('Travel Stats-completed').textContent=pct+'%');
@@ -1809,7 +1855,7 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
 
   document.addEventListener('DOMContentLoaded',()=>{
     updateCountdown(); setInterval(updateCountdown,60000);
-    renderPhotos(); renderJournals(); renderMap(); renderSongs(); refreshTravel Stats();
+    renderPhotos(); renderJournals(); renderMap(); renderSongs(); refreshTravelStats();
     if(localStorage.getItem(LS.pin)) setTimeout(showLockScreen,250);
   });
 })();
@@ -1891,7 +1937,7 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
 <div id="cloud-modal">
   <div class="cloud-card">
     <h2>Cloud Sync</h2>
-    <p>Sign in to sync completed activities, food, nightlife, photos, journal entries, map status, and Travel Stats data across your phone and desktop.</p>
+    <p>Sign in to sync completed activities, food, nightlife, photos, map status, and travel stats across your phone and desktop.</p>
     <input id="cloud-email" type="email" placeholder="Email">
     <input id="cloud-password" type="password" placeholder="Password">
     <div class="cloud-actions">
@@ -1961,7 +2007,7 @@ function applySnapshot(data){
   // Repaint existing UI after sync
   setTimeout(() => {
     try { if(window.syncMapWithTimeline) window.syncMapWithTimeline(); } catch(e){}
-    try { if(window.refreshTravel Stats) window.refreshTravel Stats(); } catch(e){}
+    try { if(window.refreshTravelStats) window.refreshTravelStats(); } catch(e){}
     try { document.body.click(); } catch(e){}
     location.reload();
   }, 350);
