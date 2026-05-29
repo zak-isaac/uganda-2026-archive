@@ -1109,6 +1109,16 @@ button[onclick*="mapmode"],button[onclick*="stats"],button[onclick*="countdown"]
 #feature-mapmode,#feature-stats,#feature-countdown{display:none!important;}
 </style>
 
+
+<style>
+button[onclick*="mapmode"],
+button[onclick*="stats"],
+#feature-mapmode,
+#feature-stats{
+display:none !important;
+}
+</style>
+
 </head><body>
 
 <section class="cover clean-image2-cover" id="cover">
@@ -1371,7 +1381,7 @@ button[onclick*="mapmode"],button[onclick*="stats"],button[onclick*="countdown"]
   <section class="feature-hero">
     <div>
       <small>LIVE TRIP STATUS</small>
-      <h2 id="countdown-title">Uganda 2026 Countdown</h2>
+      <h2 id="countdown-title"></h2>
       <p id="countdown-copy">Calculating your timeline…</p>
     </div>
     <div class="countdown-grid">
@@ -1741,7 +1751,7 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
     const end = new Date('2026-07-01T23:59:59');
     const now = new Date();
     let diff = start - now;
-    let title='Uganda 2026 Countdown', copy='Counting down to departure.';
+    let title='', copy='Counting down to departure.';
     let tripDay='--';
     if(now >= start && now <= end){
       diff = end - now;
