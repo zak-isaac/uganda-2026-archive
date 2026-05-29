@@ -1065,6 +1065,25 @@ button[onclick*="journal"],button[onclick*="passport"],button[onclick*="boarding
 }
 </style>
 
+
+<style>
+/* === FIREBASE OVERRIDE FINAL CSS === */
+#cloud-modal.cloud-open{display:grid!important}
+.cloud-x{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-size:22px;
+  cursor:pointer;
+}
+</style>
+
 </head><body>
 
 <section class="cover clean-image2-cover" id="cover">
@@ -2698,6 +2717,188 @@ window.cloudSignOut = async function(){
     setTimeout(()=>renderRealUgandaMap(window.liveUgFilter||'all', document.getElementById('liveUgSearch')?.value || ''),180);
   });
 })();
+</script>
+
+
+<script type="module">
+/* === FIREBASE OVERRIDE FINAL: forces config + login to work === */
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+window.UGANDA_2026_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAE0fOVMzYvKECncfCMm9hcGBu3m2_Vp6I",
+  authDomain: "uganda-2026-archive.firebaseapp.com",
+  projectId: "uganda-2026-archive",
+  storageBucket: "uganda-2026-archive.firebasestorage.app",
+  messagingSenderId: "940081275714",
+  appId: "1:940081275714:web:b4d8877f45df02fc4a5edb"
+};
+
+const CLOUD_KEYS = [
+  "zak_uganda_2026_archive_progress_v1",
+  "ug26_map_visited_v1",
+  "ug26_photos_v1",
+  "ug26_photos_v2",
+  "ug26_pin_v1",
+  "ug26_ap_pin",
+  "ug26_private_unlock"
+];
+
+let firebaseApp, firebaseAuth, firebaseDb, firebaseUser;
+
+function cloudStatus(msg){
+  const el = document.getElementById("cloud-status");
+  if(el) el.textContent = msg;
+}
+
+function showCloudModalFinal(){
+  const modal = document.getElementById("cloud-modal");
+  if(!modal){
+    alert("Cloud Sync modal was not found.");
+    return;
+  }
+  modal.classList.add("cloud-open");
+  modal.style.display = "grid";
+  const card = modal.querySelector(".cloud-card");
+  if(card && !card.querySelector(".cloud-x")){
+    card.style.position = "relative";
+    const x = document.createElement("button");
+    x.className = "cloud-x";
+    x.textContent = "×";
+    x.onclick = hideCloudModalFinal;
+    card.appendChild(x);
+  }
+  cloudStatus("Firebase config loaded. Sign in or create an account.");
+}
+
+function hideCloudModalFinal(){
+  const modal = document.getElementById("cloud-modal");
+  if(modal){
+    modal.classList.remove("cloud-open");
+    modal.style.display = "none";
+  }
+}
+
+window.showCloudModal = showCloudModalFinal;
+window.hideCloudModal = hideCloudModalFinal;
+window.openCloudSyncFromArchive = showCloudModalFinal;
+
+function getLocalSnapshot(){
+  const data = {};
+  CLOUD_KEYS.forEach(k => data[k] = localStorage.getItem(k) || null);
+  Object.keys(localStorage).forEach(k => {
+    if(k.startsWith("ug26-")) data[k] = localStorage.getItem(k);
+  });
+  return data;
+}
+
+function applyLocalSnapshot(data){
+  if(!data) return;
+  Object.entries(data).forEach(([k,v]) => {
+    if(v === null || typeof v === "undefined") localStorage.removeItem(k);
+    else localStorage.setItem(k, v);
+  });
+}
+
+async function pushCloudFinal(){
+  if(!firebaseUser || !firebaseDb) return;
+  await setDoc(doc(firebaseDb, "uganda2026Archives", firebaseUser.uid), {
+    updatedAt: serverTimestamp(),
+    data: getLocalSnapshot()
+  }, { merge: true });
+}
+
+async function pullCloudFinal(){
+  if(!firebaseUser || !firebaseDb) return;
+  const snap = await getDoc(doc(firebaseDb, "uganda2026Archives", firebaseUser.uid));
+  if(snap.exists() && snap.data().data){
+    applyLocalSnapshot(snap.data().data);
+    cloudStatus("Cloud data loaded. Refreshing archive...");
+    setTimeout(() => location.reload(), 500);
+  }else{
+    await pushCloudFinal();
+    cloudStatus("Cloud sync active. New archive created.");
+  }
+}
+
+try{
+  firebaseApp = getApps().length ? getApp() : initializeApp(window.UGANDA_2026_FIREBASE_CONFIG);
+  firebaseAuth = getAuth(firebaseApp);
+  firebaseDb = getFirestore(firebaseApp);
+
+  onAuthStateChanged(firebaseAuth, async user => {
+    firebaseUser = user;
+    const btn = document.getElementById("cloud-sync-btn");
+    if(user){
+      if(btn){ btn.classList.add("connected"); btn.textContent = "Cloud Synced"; }
+      cloudStatus("Signed in. Syncing archive...");
+      try{
+        await pullCloudFinal();
+        await pushCloudFinal();
+      }catch(e){
+        cloudStatus("Signed in, but Firestore sync failed: " + e.message);
+      }
+    }else{
+      if(btn){ btn.classList.remove("connected"); btn.textContent = "Cloud Sync"; }
+      cloudStatus("Signed out. Firebase config loaded.");
+    }
+  });
+
+  window.cloudCreateAccount = async function(){
+    const email = document.getElementById("cloud-email")?.value.trim();
+    const password = document.getElementById("cloud-password")?.value;
+    if(!email || !password) return cloudStatus("Enter email and password first.");
+    if(password.length < 6) return cloudStatus("Password must be at least 6 characters.");
+    try{
+      cloudStatus("Creating account...");
+      await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      cloudStatus("Account created. Syncing...");
+      await pushCloudFinal();
+    }catch(e){
+      cloudStatus(e.code ? e.code + ": " + e.message : e.message);
+    }
+  };
+
+  window.cloudSignIn = async function(){
+    const email = document.getElementById("cloud-email")?.value.trim();
+    const password = document.getElementById("cloud-password")?.value;
+    if(!email || !password) return cloudStatus("Enter email and password first.");
+    try{
+      cloudStatus("Signing in...");
+      await signInWithEmailAndPassword(firebaseAuth, email, password);
+      cloudStatus("Signed in. Syncing...");
+    }catch(e){
+      cloudStatus(e.code ? e.code + ": " + e.message : e.message);
+    }
+  };
+
+  window.cloudSignOut = async function(){
+    try{
+      await signOut(firebaseAuth);
+      cloudStatus("Signed out.");
+    }catch(e){
+      cloudStatus(e.message);
+    }
+  };
+
+  cloudStatus("Firebase ready. Sign in or create an account.");
+}catch(e){
+  console.error("Firebase override init error:", e);
+  cloudStatus("Firebase could not initialize: " + e.message);
+}
 </script>
 
 </body></html>

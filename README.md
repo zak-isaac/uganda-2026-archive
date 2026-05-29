@@ -1,16 +1,5 @@
-# Uganda 2026 Archive - Updated Final
+# Uganda 2026 Firebase Login Final
 
-Built directly from uploaded index(37).html.
+Upload index.html to GitHub. firebase-config.js is included as backup.
 
-Fixed:
-- Firebase config is now embedded inside index.html
-- firebase-config.js is also included as backup
-- Map tab opens
-- Lock tab opens
-- Uganda countdown runs every second and includes seconds
-- Cloud Sync modal opens
-- Removed syntax-breaking refreshTravel Stats bug
-- Reset progress remains PIN protected
-- Mobile bottom nav remains removed
-
-Upload index.html to GitHub. Upload firebase-config.js too, although this index.html already includes the keys inline.
+This version forces Firebase config and overrides the old broken sign-in functions at the end of the page.
