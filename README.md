@@ -1,12 +1,14 @@
-# Uganda 2026 Current File Mobile Fix
+# Uganda 2026 V4
 
-This version was patched directly from the uploaded current live file: index(35).html.
+Patched directly from index(36).html.
 
 Changes:
-- Mobile now uses a separate phone cover page
-- Desktop cover remains untouched
-- Mobile cover buttons are clickable
-- Activities/Food/Nightlife/Extras open the real app page
-- Sidebar becomes horizontal mobile navigation
-- Active tab highlighting is fixed
-- No assets folder required because images remain embedded in index.html
+- Removed Journal, Passport, Music, and Recap UI
+- Built real interactive Uganda Map Mode with Activities/Food/Nightlife pins
+- Map pins are connected to completed timeline checkmarks
+- Photo Memory System now supports Chapter + Day + Place
+- Removed duplicate back buttons; sidebar back button remains
+- Moved Cloud Sync into Archive+
+- Moved Reset Progress into Archive+ and made it PIN protected
+- Removed mobile bottom navigation panel; hamburger remains
+- Single-file images remain embedded. No assets folder needed.
