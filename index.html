@@ -1084,6 +1084,31 @@ button[onclick*="journal"],button[onclick*="passport"],button[onclick*="boarding
 }
 </style>
 
+
+<style>
+/* === FIREBASE NO-RELOAD SYNC FINAL CSS === */
+#cloud-modal.cloud-open{display:grid!important}
+.cloud-x{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-size:22px;
+  cursor:pointer;
+}
+</style>
+
+
+<style id="v5-remove-map-countdown-stats">
+button[onclick*="mapmode"],button[onclick*="stats"],button[onclick*="countdown"]{display:none!important;}
+#feature-mapmode,#feature-stats,#feature-countdown{display:none!important;}
+</style>
+
 </head><body>
 
 <section class="cover clean-image2-cover" id="cover">
@@ -2060,7 +2085,7 @@ function applySnapshot(data){
     try { if(window.syncMapWithTimeline) window.syncMapWithTimeline(); } catch(e){}
     try { if(window.refreshTravelStats) window.refreshTravelStats(); } catch(e){}
     try { document.body.click(); } catch(e){}
-    location.reload();
+    try{ if(window.updateProgress) window.updateProgress(); if(window.syncMapWithTimeline) window.syncMapWithTimeline(); }catch(e){}
   }, 350);
 }
 
@@ -2720,8 +2745,9 @@ window.cloudSignOut = async function(){
 </script>
 
 
+
 <script type="module">
-/* === FIREBASE OVERRIDE FINAL: forces config + login to work === */
+/* === FIREBASE NO-RELOAD SYNC FINAL === */
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getAuth,
@@ -2757,14 +2783,95 @@ const CLOUD_KEYS = [
   "ug26_private_unlock"
 ];
 
-let firebaseApp, firebaseAuth, firebaseDb, firebaseUser;
+let appFinal, authFinal, dbFinal, userFinal;
+let isApplyingCloudFinal = false;
+let pushTimerFinal = null;
 
-function cloudStatus(msg){
+function cloudStatusFinal(msg){
   const el = document.getElementById("cloud-status");
   if(el) el.textContent = msg;
 }
 
-function showCloudModalFinal(){
+function localSnapshotFinal(){
+  const data = {};
+  CLOUD_KEYS.forEach(k => data[k] = localStorage.getItem(k) || null);
+  Object.keys(localStorage).forEach(k => {
+    if(k.startsWith("ug26-")) data[k] = localStorage.getItem(k);
+  });
+  return data;
+}
+
+function repaintAfterCloudFinal(){
+  try { if(typeof window.setupProgressTracking === "function") window.setupProgressTracking(); } catch(e){}
+  try { if(typeof window.updateProgress === "function") window.updateProgress(); } catch(e){}
+  try { if(typeof window.syncMapWithTimeline === "function") window.syncMapWithTimeline(); } catch(e){}
+  try { if(typeof window.renderRealUgandaMap === "function") window.renderRealUgandaMap(window.liveUgFilter || "all", document.getElementById("liveUgSearch")?.value || ""); } catch(e){}
+  try { document.body.dispatchEvent(new Event("click")); } catch(e){}
+}
+
+function applySnapshotFinal(data){
+  if(!data) return;
+  isApplyingCloudFinal = true;
+  Object.entries(data).forEach(([k,v]) => {
+    if(v === null || typeof v === "undefined") localStorage.removeItem(k);
+    else localStorage.setItem(k, v);
+  });
+  isApplyingCloudFinal = false;
+  repaintAfterCloudFinal();
+}
+
+async function pushCloudFinalNoReload(){
+  if(!userFinal || !dbFinal || isApplyingCloudFinal) return;
+  await setDoc(doc(dbFinal, "uganda2026Archives", userFinal.uid), {
+    updatedAt: serverTimestamp(),
+    data: localSnapshotFinal()
+  }, { merge: true });
+}
+
+async function pullCloudFinalNoReload(){
+  if(!userFinal || !dbFinal) return;
+  const snap = await getDoc(doc(dbFinal, "uganda2026Archives", userFinal.uid));
+  if(snap.exists() && snap.data().data){
+    applySnapshotFinal(snap.data().data);
+    cloudStatusFinal("Cloud data loaded. Sync active.");
+  }else{
+    await pushCloudFinalNoReload();
+    cloudStatusFinal("Cloud sync active. New cloud save created.");
+  }
+}
+
+function schedulePushFinal(){
+  if(!userFinal || isApplyingCloudFinal) return;
+  clearTimeout(pushTimerFinal);
+  pushTimerFinal = setTimeout(async () => {
+    try{
+      await pushCloudFinalNoReload();
+      cloudStatusFinal("Cloud synced.");
+    }catch(e){
+      cloudStatusFinal("Cloud sync failed: " + e.message);
+    }
+  }, 900);
+}
+
+function patchStorageFinal(){
+  if(window.__ugandaNoReloadStoragePatched) return;
+  window.__ugandaNoReloadStoragePatched = true;
+
+  const originalSetItem = localStorage.setItem.bind(localStorage);
+  const originalRemoveItem = localStorage.removeItem.bind(localStorage);
+
+  localStorage.setItem = function(k,v){
+    originalSetItem(k,v);
+    if(String(k).startsWith("ug26-") || CLOUD_KEYS.includes(k)) schedulePushFinal();
+  };
+
+  localStorage.removeItem = function(k){
+    originalRemoveItem(k);
+    if(String(k).startsWith("ug26-") || CLOUD_KEYS.includes(k)) schedulePushFinal();
+  };
+}
+
+function showCloudModalNoReload(){
   const modal = document.getElementById("cloud-modal");
   if(!modal){
     alert("Cloud Sync modal was not found.");
@@ -2778,13 +2885,13 @@ function showCloudModalFinal(){
     const x = document.createElement("button");
     x.className = "cloud-x";
     x.textContent = "×";
-    x.onclick = hideCloudModalFinal;
+    x.onclick = hideCloudModalNoReload;
     card.appendChild(x);
   }
-  cloudStatus("Firebase config loaded. Sign in or create an account.");
+  cloudStatusFinal(userFinal ? "Signed in. Cloud sync active." : "Firebase ready. Sign in or create an account.");
 }
 
-function hideCloudModalFinal(){
+function hideCloudModalNoReload(){
   const modal = document.getElementById("cloud-modal");
   if(modal){
     modal.classList.remove("cloud-open");
@@ -2792,113 +2899,88 @@ function hideCloudModalFinal(){
   }
 }
 
-window.showCloudModal = showCloudModalFinal;
-window.hideCloudModal = hideCloudModalFinal;
-window.openCloudSyncFromArchive = showCloudModalFinal;
-
-function getLocalSnapshot(){
-  const data = {};
-  CLOUD_KEYS.forEach(k => data[k] = localStorage.getItem(k) || null);
-  Object.keys(localStorage).forEach(k => {
-    if(k.startsWith("ug26-")) data[k] = localStorage.getItem(k);
-  });
-  return data;
-}
-
-function applyLocalSnapshot(data){
-  if(!data) return;
-  Object.entries(data).forEach(([k,v]) => {
-    if(v === null || typeof v === "undefined") localStorage.removeItem(k);
-    else localStorage.setItem(k, v);
-  });
-}
-
-async function pushCloudFinal(){
-  if(!firebaseUser || !firebaseDb) return;
-  await setDoc(doc(firebaseDb, "uganda2026Archives", firebaseUser.uid), {
-    updatedAt: serverTimestamp(),
-    data: getLocalSnapshot()
-  }, { merge: true });
-}
-
-async function pullCloudFinal(){
-  if(!firebaseUser || !firebaseDb) return;
-  const snap = await getDoc(doc(firebaseDb, "uganda2026Archives", firebaseUser.uid));
-  if(snap.exists() && snap.data().data){
-    applyLocalSnapshot(snap.data().data);
-    cloudStatus("Cloud data loaded. Refreshing archive...");
-    setTimeout(() => location.reload(), 500);
-  }else{
-    await pushCloudFinal();
-    cloudStatus("Cloud sync active. New archive created.");
-  }
-}
+window.showCloudModal = showCloudModalNoReload;
+window.hideCloudModal = hideCloudModalNoReload;
+window.openCloudSyncFromArchive = showCloudModalNoReload;
 
 try{
-  firebaseApp = getApps().length ? getApp() : initializeApp(window.UGANDA_2026_FIREBASE_CONFIG);
-  firebaseAuth = getAuth(firebaseApp);
-  firebaseDb = getFirestore(firebaseApp);
+  appFinal = getApps().length ? getApp() : initializeApp(window.UGANDA_2026_FIREBASE_CONFIG);
+  authFinal = getAuth(appFinal);
+  dbFinal = getFirestore(appFinal);
+  patchStorageFinal();
 
-  onAuthStateChanged(firebaseAuth, async user => {
-    firebaseUser = user;
+  onAuthStateChanged(authFinal, async user => {
+    userFinal = user;
     const btn = document.getElementById("cloud-sync-btn");
     if(user){
       if(btn){ btn.classList.add("connected"); btn.textContent = "Cloud Synced"; }
-      cloudStatus("Signed in. Syncing archive...");
+      cloudStatusFinal("Signed in. Loading cloud save...");
       try{
-        await pullCloudFinal();
-        await pushCloudFinal();
+        await pullCloudFinalNoReload();
+        await pushCloudFinalNoReload();
       }catch(e){
-        cloudStatus("Signed in, but Firestore sync failed: " + e.message);
+        cloudStatusFinal("Signed in, but sync failed: " + e.message);
       }
     }else{
       if(btn){ btn.classList.remove("connected"); btn.textContent = "Cloud Sync"; }
-      cloudStatus("Signed out. Firebase config loaded.");
+      cloudStatusFinal("Signed out. Firebase ready.");
     }
   });
 
   window.cloudCreateAccount = async function(){
     const email = document.getElementById("cloud-email")?.value.trim();
     const password = document.getElementById("cloud-password")?.value;
-    if(!email || !password) return cloudStatus("Enter email and password first.");
-    if(password.length < 6) return cloudStatus("Password must be at least 6 characters.");
+    if(!email || !password) return cloudStatusFinal("Enter email and password first.");
+    if(password.length < 6) return cloudStatusFinal("Password must be at least 6 characters.");
     try{
-      cloudStatus("Creating account...");
-      await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      cloudStatus("Account created. Syncing...");
-      await pushCloudFinal();
+      cloudStatusFinal("Creating account...");
+      await createUserWithEmailAndPassword(authFinal, email, password);
+      await pushCloudFinalNoReload();
+      cloudStatusFinal("Account created. Cloud sync active.");
     }catch(e){
-      cloudStatus(e.code ? e.code + ": " + e.message : e.message);
+      cloudStatusFinal(e.code ? e.code + ": " + e.message : e.message);
     }
   };
 
   window.cloudSignIn = async function(){
     const email = document.getElementById("cloud-email")?.value.trim();
     const password = document.getElementById("cloud-password")?.value;
-    if(!email || !password) return cloudStatus("Enter email and password first.");
+    if(!email || !password) return cloudStatusFinal("Enter email and password first.");
     try{
-      cloudStatus("Signing in...");
-      await signInWithEmailAndPassword(firebaseAuth, email, password);
-      cloudStatus("Signed in. Syncing...");
+      cloudStatusFinal("Signing in...");
+      await signInWithEmailAndPassword(authFinal, email, password);
+      cloudStatusFinal("Signed in. Cloud sync active.");
     }catch(e){
-      cloudStatus(e.code ? e.code + ": " + e.message : e.message);
+      cloudStatusFinal(e.code ? e.code + ": " + e.message : e.message);
     }
   };
 
   window.cloudSignOut = async function(){
     try{
-      await signOut(firebaseAuth);
-      cloudStatus("Signed out.");
+      await signOut(authFinal);
+      cloudStatusFinal("Signed out.");
     }catch(e){
-      cloudStatus(e.message);
+      cloudStatusFinal(e.message);
     }
   };
 
-  cloudStatus("Firebase ready. Sign in or create an account.");
+  cloudStatusFinal("Firebase ready. No-refresh sync enabled.");
 }catch(e){
-  console.error("Firebase override init error:", e);
-  cloudStatus("Firebase could not initialize: " + e.message);
+  console.error("Firebase no-reload override error:", e);
+  cloudStatusFinal("Firebase could not initialize: " + e.message);
 }
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+ const mapBtn=[...document.querySelectorAll('button')].find(b=>(b.textContent||'').toLowerCase().includes('map'));
+ if(mapBtn) mapBtn.remove();
+ const statsBtn=[...document.querySelectorAll('button')].find(b=>(b.textContent||'').toLowerCase().includes('stats'));
+ if(statsBtn) statsBtn.remove();
+ const countBtn=[...document.querySelectorAll('button')].find(b=>(b.textContent||'').toLowerCase().includes('count'));
+ if(countBtn) countBtn.remove();
+});
 </script>
 
 </body></html>

@@ -1,5 +1,6 @@
-# Uganda 2026 Firebase Login Final
+# Uganda 2026 Cloud No Refresh Final
 
-Upload index.html to GitHub. firebase-config.js is included as backup.
-
-This version forces Firebase config and overrides the old broken sign-in functions at the end of the page.
+Fixed:
+- Cloud Sync no longer reloads the page after every checkbox click.
+- Checkbox changes now push to Firebase silently.
+- Cloud pull updates local data and repaints UI without constant refresh.
