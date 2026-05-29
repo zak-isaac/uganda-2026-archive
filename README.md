@@ -1,30 +1,24 @@
 # uganda-2026-github-pages
 
-Zak's Uganda 2026 digital travel archive with cross-device cloud sync.
+Smaller final upload package.
 
-## Files
-- `index.html` — website
-- `firebase-config.js` — add your Firebase keys here
-- `firestore.rules` — copy these rules into Firebase Firestore Rules
+What changed:
+- Removed Passport / Boarding Pass
+- Removed Music
+- Removed Journal / Voice Notes
+- Replaced Recap with lighter Travel Stats
+- Kept Uganda Map Mode Preview
+- Kept Photo Memory System
+- Kept Cloud Sync / Firebase files
+- Kept Private Lock
+- Added seconds to Live Trip Status
+- Improved Cover back button
+- Fixed cover return / white page behavior
+- Extracted embedded images into /assets to make index.html much smaller and easier to update
 
-## Important
-GitHub Pages can host the website, but it cannot run a backend database by itself.
-This package uses Firebase Authentication + Firestore as the small backend database.
-
-## Setup Firebase
-1. Go to Firebase Console
-2. Create a project: `uganda-2026-archive`
-3. Add a Web App
-4. Copy the Firebase config values into `firebase-config.js`
-5. Go to Authentication → Sign-in method → enable Email/Password
-6. Go to Firestore Database → Create database
-7. Go to Rules and paste the contents of `firestore.rules`
-8. Publish rules
-9. Upload all files to your GitHub repo root:
-   - index.html
-   - firebase-config.js
-   - firestore.rules
-   - README.md
-10. Commit changes
-
-After the site loads, click `Cloud Sync`, create an account, and your progress will sync across phone and desktop.
+Upload everything in this ZIP to the GitHub repository root:
+- index.html
+- firebase-config.js
+- firestore.rules
+- README.md
+- assets/ folder
