@@ -1,22 +1,12 @@
 # uganda-2026-github-pages
 
-Single-file image version.
+Single-file final version with images embedded.
 
-Upload:
-- index.html
-- firebase-config.js
-- firestore.rules
-- README.md
-
-No assets folder needed. All images are embedded inside index.html.
-
-Included:
-- Removed Passport / Boarding
-- Removed Journal / Voice Notes
-- Removed Recap and replaced with Travel Stats
-- Live Trip Status includes seconds
-- Lock protects private Archive+ content only
-- Cover return / white page fix
-- Styled Cover back button
-- Chapter image clarity improvement
-- Mobile cover safety fix
+Updates included:
+- Sidebar Trip Progress hidden
+- Fixed active nav highlighting
+- Uiverse-inspired Go Back cover button
+- Swap / Move Planner for Activities, Food, Nightlife
+- Live Uganda Map Mode with clickable markers
+- Map marker status connected to completed timeline checkmarks
+- No assets folder needed
