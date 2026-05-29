@@ -1,11 +1,16 @@
-# Uganda 2026 V4 Fix
+# Uganda 2026 Archive - Updated Final
 
-Built from the V4 current index.
+Built directly from uploaded index(37).html.
 
 Fixed:
+- Firebase config is now embedded inside index.html
+- firebase-config.js is also included as backup
 - Map tab opens
 - Lock tab opens
-- Uganda 2026 Countdown runs and includes seconds
+- Uganda countdown runs every second and includes seconds
 - Cloud Sync modal opens
-- Firebase login buttons show a useful message if firebase-config.js is missing or not configured
-- Syntax-breaking refreshTravel Stats bug fixed
+- Removed syntax-breaking refreshTravel Stats bug
+- Reset progress remains PIN protected
+- Mobile bottom nav remains removed
+
+Upload index.html to GitHub. Upload firebase-config.js too, although this index.html already includes the keys inline.

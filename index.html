@@ -1044,6 +1044,27 @@ button[onclick*="recap"],
 }
 </style>
 
+
+<style>
+/* === FINAL FIREBASE / MAP / LOCK / COUNTDOWN FIX === */
+.feature-panel{display:none!important}
+.feature-panel.active{display:block!important}
+.feature-tabs button{pointer-events:auto!important;position:relative!important;z-index:10!important}
+#cloud-modal.cloud-open{display:grid!important}
+.cloud-x{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#fff;font-size:22px;cursor:pointer}
+.countdown-grid.countdown-has-seconds{grid-template-columns:repeat(5,1fr)!important}
+#cloud-sync-btn{display:none!important}
+#reset-progress-btn{display:none!important}
+.mobile-fixed-bottom,.mobile-cover-nav,.mobile-bottom-nav{display:none!important}
+button[onclick*="journal"],button[onclick*="passport"],button[onclick*="boarding"],button[onclick*="music"],button[onclick*="recap"],
+#feature-journal,#feature-passport,#feature-boarding,#feature-music,#feature-recap,
+#ap-journal,#ap-passport,#ap-boarding,#ap-music,#ap-recap{display:none!important}
+@media(max-width:760px){
+  .countdown-grid.countdown-has-seconds{grid-template-columns:repeat(2,1fr)!important}
+  .mobile-fixed-bottom,.mobile-cover-nav,.mobile-bottom-nav{display:none!important}
+}
+</style>
+
 </head><body>
 
 <section class="cover clean-image2-cover" id="cover">
@@ -1951,6 +1972,17 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
 </div>
 <button id="cloud-sync-btn" onclick="showCloudModal()">Cloud Sync</button>
 
+
+<script>
+window.UGANDA_2026_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAE0fOVMzYvKECncfCMm9hcGBu3m2_Vp6I",
+  authDomain: "uganda-2026-archive.firebaseapp.com",
+  projectId: "uganda-2026-archive",
+  storageBucket: "uganda-2026-archive.firebasestorage.app",
+  messagingSenderId: "940081275714",
+  appId: "1:940081275714:web:b4d8877f45df02fc4a5edb"
+};
+</script>
 
 <script type="module">
 /* === Firebase Cloud Sync for Uganda 2026 ===
