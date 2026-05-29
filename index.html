@@ -430,6 +430,33 @@ button[onclick*="showCover"]:hover::after{transform:translateX(120%);}
 }
 </style>
 
+
+<style>
+/* === FINAL VERIFIED CSS CLEANUP === */
+button[onclick*="journal"],button[onclick*="music"],button[onclick*="passport"],button[onclick*="boarding"],
+#feature-journal,#feature-music,#feature-passport,#feature-boarding,#feature-recap,
+#ap-journal,#ap-music,#ap-passport,#ap-boarding,#ap-recap{display:none!important;}
+.travel-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.travel-stats-grid div{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.045);padding:18px;text-align:center}
+.travel-stats-grid b{display:block;color:var(--gold);font-size:30px}.travel-stats-grid span{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+button[onclick*="showCover"], .cover-back, .back-cover{
+  border:1px solid rgba(245,196,0,.52)!important;
+  background:linear-gradient(135deg,rgba(245,196,0,.22),rgba(255,255,255,.05))!important;
+  color:#fff!important;border-radius:999px!important;box-shadow:0 12px 34px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.05)!important;
+}
+.chapter-hero,.chapter-card,.native-card,.timeline-card,.archive-card,.day-card,[class*="chapter"][style*="background"],[class*="hero"][style*="background"],[class*="card"][style*="background"]{
+  background-size:cover!important;background-position:center center!important;image-rendering:auto!important;filter:contrast(1.08) saturate(1.08) brightness(1.07)!important;
+}
+.chapter-hero::before,.chapter-card::before,.native-card::before,.timeline-card::before,.archive-card::before,.day-card::before{filter:none!important}
+@media(max-width:760px){
+  .travel-stats-grid{grid-template-columns:repeat(2,1fr)}
+  .clean-image2-cover,.cover{min-height:100dvh!important;height:100dvh!important;overflow:hidden!important}
+  .clean-image2-bg{background-size:contain!important;background-repeat:no-repeat!important;background-position:center top!important;background-color:#050505!important}
+  .clean-image2-cover::before{background-size:cover!important;background-position:center top!important}
+  .countdown-grid{grid-template-columns:repeat(2,1fr)!important}
+}
+</style>
+
 </head><body>
 
 <section class="cover clean-image2-cover" id="cover">
@@ -640,7 +667,7 @@ button[onclick*="showCover"]:hover::after{transform:translateX(120%);}
 
 <div class="page hidden" id="archiveplus">
   <h1 class="page-title">📸 Archive+</h1>
-  <p class="sub">Photos, Uganda Map Mode, live trip status, private lock, cloud sync, and memory recap.</p>
+  <p class="sub">Photos, Uganda Map Mode, live trip status, private lock, cloud sync, and Travel Stats.</p>
   <div class="rule"></div>
 
   <section class="feature-hero">
@@ -1041,7 +1068,7 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
     } else if(now > end){
       diff = now - end;
       title='Trip Completed';
-      copy='Memory recap mode is ready.';
+      copy='Travel Stats is ready.';
       tripDay = 'Done';
     }
     const d=Math.max(0,Math.floor(diff/(1000*60*60*24)));
@@ -1586,6 +1613,73 @@ window.cloudSignOut = async function(){
   };
   document.addEventListener('DOMContentLoaded',()=>setTimeout(updateTravelStats,500));
   document.body.addEventListener('click',()=>setTimeout(updateTravelStats,200));
+})();
+</script>
+
+
+<script>
+/* === FINAL VERIFIED PATCH: seconds, travel stats, lock scope, cover return === */
+(function(){
+  function setText(id,val){const e=document.getElementById(id); if(e) e.textContent=val;}
+  function tripCountdownPatch(){
+    const start=new Date('2026-06-10T00:00:00');
+    const end=new Date('2026-07-01T23:59:59');
+    const now=new Date();
+    let diff=start-now, trip='--', title='Uganda 2026 Countdown', copy='Counting down to departure.';
+    if(now>=start && now<=end){diff=end-now; trip=Math.max(1,Math.ceil((now-start)/86400000)); title='You are in Uganda 🇺🇬'; copy='The archive is live. Keep saving memories daily.';}
+    if(now>end){diff=now-end; trip='Done'; title='Trip Completed'; copy='Travel stats are ready.';}
+    setText('countdown-title', title); setText('countdown-copy', copy);
+    setText('cd-days', Math.max(0,Math.floor(diff/86400000)));
+    setText('cd-hours', Math.max(0,Math.floor(diff/3600000)%24));
+    setText('cd-mins', Math.max(0,Math.floor(diff/60000)%60));
+    setText('cd-secs', Math.max(0,Math.floor(diff/1000)%60));
+    setText('cd-tripday', trip);
+  }
+  function updateTravelStatsFinal(){
+    const timeline=[...document.querySelectorAll('.timeline-body li')];
+    const extras=[...document.querySelectorAll('.extra-item input')];
+    const total=timeline.length+extras.length;
+    const done=timeline.filter(x=>x.classList.contains('done')).length+extras.filter(x=>x.checked).length;
+    const pct=total?Math.round(done/total*100):0;
+    let photos=0; try{photos=JSON.parse(localStorage.getItem('ug26_ap_photos')||localStorage.getItem('ug26_photos_v1')||'[]').length;}catch(e){}
+    setText('stats-completed',pct+'%'); setText('stats-done',done); setText('stats-total',total); setText('stats-photos',photos);
+  }
+  const oldShowCover=window.showCover;
+  window.showCover=function(){
+    document.body.classList.remove('route-app');
+    const app=document.getElementById('app'), cover=document.getElementById('cover'), mobile=document.getElementById('mobile-cover-v2');
+    if(app) app.classList.add('hidden');
+    if(cover){cover.classList.remove('hidden');cover.style.display='';cover.style.visibility='visible';cover.style.opacity='1';}
+    if(mobile){mobile.classList.remove('hidden');mobile.style.display='';}
+    try{window.scrollTo({top:0,left:0,behavior:'instant'});}catch(e){window.scrollTo(0,0);}
+  };
+  window.privateArchiveUnlocked = localStorage.getItem('ug26_private_unlock')==='1';
+  function needsLock(id){return ['mapmode','memories','photos','stats','sync','lock'].includes(id);}
+  const oldShowFeature=window.showFeature;
+  window.showFeature=function(id,btn){
+    const pin=localStorage.getItem('ug26_ap_pin')||localStorage.getItem('ug26_pin_v1');
+    if(needsLock(id)&&pin&&!window.privateArchiveUnlocked){
+      if(typeof apShowLock==='function') apShowLock(); else if(typeof lockArchiveNow==='function') lockArchiveNow();
+      return;
+    }
+    if(typeof oldShowFeature==='function') oldShowFeature(id,btn);
+    setTimeout(updateTravelStatsFinal,150);
+  };
+  const oldUnlock=window.apUnlock;
+  window.apUnlock=function(){
+    const stored=localStorage.getItem('ug26_ap_pin')||localStorage.getItem('ug26_pin_v1');
+    const val=(document.getElementById('ap-unlock-pin')||document.getElementById('unlock-pin')||{}).value||'';
+    if(stored&&btoa(val)===stored){
+      window.privateArchiveUnlocked=true; localStorage.setItem('ug26_private_unlock','1');
+      const s=document.getElementById('ap-lock-screen')||document.getElementById('archive-lock-screen'); if(s) s.style.display='none';
+    }else if(typeof oldUnlock==='function') oldUnlock(); else alert('Wrong PIN.');
+  };
+  document.addEventListener('DOMContentLoaded',function(){
+    tripCountdownPatch(); updateTravelStatsFinal();
+    setInterval(tripCountdownPatch,1000);
+    const s=document.getElementById('ap-lock-screen')||document.getElementById('archive-lock-screen'); if(s) s.style.display='none';
+  });
+  document.body.addEventListener('click',()=>setTimeout(updateTravelStatsFinal,200));
 })();
 </script>
 
