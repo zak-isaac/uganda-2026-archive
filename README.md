@@ -1,9 +1,9 @@
 # uganda-2026-github-pages
 
-Zak's Uganda 2026 digital travel archive.
+Final upload with mobile page navigation fix.
 
-Latest update:
-- Desktop cover stays exactly as designed
-- Dedicated mobile cover layout added
-- Mobile no longer stretches/crops the desktop cover
-- Progress still saves locally on each device/browser
+Fix included:
+- On mobile, tapping Activities/Food/Nightlife/Extras from the cover now transitions into the timeline app page.
+- It hides the cover/mobile cover instead of just scrolling down the same page.
+- It jumps to the top of the selected timeline page.
+- Previous completed features and progress-saving code are retained.
