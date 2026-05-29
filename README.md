@@ -1,6 +1,10 @@
-# Uganda 2026 Cloud No Refresh Final
+# Uganda 2026 Photo Memory Rebuilt
 
-Fixed:
-- Cloud Sync no longer reloads the page after every checkbox click.
-- Checkbox changes now push to Firebase silently.
-- Cloud pull updates local data and repaints UI without constant refresh.
+Built from the latest uploaded file.
+
+Changes:
+- Rebuilt Photo Memories into one clean system.
+- Removed duplicate Photo Memory blocks.
+- Hidden Map Mode, Countdown, and Travel Stats UI.
+- Keeps Cloud Sync and Lock.
+- Saves memories by Chapter, Day, Location, Caption, Photos/Videos.

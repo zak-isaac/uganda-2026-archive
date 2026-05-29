@@ -1119,6 +1119,218 @@ display:none !important;
 }
 </style>
 
+
+<style>
+#photo-day-controls-v4{display:none!important;}
+button[onclick*="mapmode"]{display:none!important;}
+#feature-mapmode{display:none!important;}
+</style>
+
+<style>
+/* === CLEAN REBUILD: remove old dashboard leftovers === */
+.live-trip-status,
+.countdown-card,
+.countdown-grid,
+#countdown-title,
+#countdown-copy,
+#feature-mapmode,
+#feature-stats,
+button[onclick*="mapmode"],
+button[onclick*="stats"],
+button[onclick*="recap"],
+#photo-day-controls-v4,
+.photo-day-controls,
+.map-preview-shell,
+.live-ug-map-card,
+.live-map-shell {
+  display:none!important;
+}
+
+/* Hide old duplicate memory form contents once rebuilt */
+#feature-memories .feature-card > h2,
+#feature-memories .feature-card > p,
+#feature-memories .feature-card > .photo-grid,
+#feature-memories .feature-card > .memory-form,
+#feature-memories .feature-card > .ap-photo-form,
+#feature-memories .feature-card > .photo-upload-row,
+#feature-memories .feature-card > select,
+#feature-memories .feature-card > input,
+#feature-memories .feature-card > button {
+  display:none!important;
+}
+
+/* New Photo Memories */
+.clean-photo-memory {
+  border:1px solid var(--line);
+  border-radius:28px;
+  background:
+    radial-gradient(circle at 18% 0%,rgba(245,196,0,.10),transparent 32%),
+    linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025));
+  padding:26px;
+  box-shadow:0 28px 90px rgba(0,0,0,.32);
+}
+.clean-photo-memory h2 {
+  margin:0;
+  font-family:'Playfair Display',serif;
+  font-size:42px;
+  line-height:1;
+}
+.clean-photo-memory .memory-sub {
+  margin:10px 0 22px;
+  color:var(--muted);
+  font-size:16px;
+}
+.clean-memory-form {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:14px;
+}
+.clean-memory-field {
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.clean-memory-field label {
+  color:var(--gold);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.13em;
+  font-family:'DM Mono',monospace;
+}
+.clean-memory-field select,
+.clean-memory-field input {
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(0,0,0,.40);
+  color:var(--text);
+  padding:14px;
+  outline:none;
+}
+.clean-memory-wide {
+  grid-column:1 / -1;
+}
+.clean-upload-box {
+  border:1px dashed rgba(245,196,0,.40);
+  border-radius:20px;
+  padding:18px;
+  background:rgba(245,196,0,.045);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.clean-upload-box input {
+  color:var(--muted);
+}
+.clean-save-memory {
+  border:0;
+  border-radius:999px;
+  background:linear-gradient(135deg,#ffd414,#f2b800);
+  color:#050505;
+  padding:14px 22px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 16px 40px rgba(0,0,0,.30);
+}
+.clean-memory-divider {
+  height:1px;
+  background:var(--line);
+  margin:24px 0;
+}
+.clean-memory-toolbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.clean-memory-toolbar h3 {
+  margin:0;
+  font-family:'Playfair Display',serif;
+  font-size:30px;
+}
+.clean-memory-toolbar select {
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:rgba(0,0,0,.36);
+  color:var(--text);
+  padding:10px 13px;
+}
+.clean-memory-gallery {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+.clean-memory-card {
+  border:1px solid var(--line);
+  border-radius:20px;
+  overflow:hidden;
+  background:rgba(0,0,0,.32);
+}
+.clean-memory-card img,
+.clean-memory-card video {
+  width:100%;
+  height:190px;
+  object-fit:cover;
+  display:block;
+  background:#111;
+}
+.clean-memory-card-body {
+  padding:13px;
+}
+.clean-memory-card-body b {
+  display:block;
+  font-family:'Playfair Display',serif;
+  font-size:20px;
+  line-height:1.05;
+}
+.clean-memory-card-body small {
+  display:block;
+  color:var(--gold);
+  margin:7px 0;
+  font-family:'DM Mono',monospace;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.clean-memory-card-body p {
+  color:var(--muted);
+  margin:0;
+  line-height:1.35;
+}
+.clean-memory-actions {
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+.clean-memory-actions button {
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+  padding:7px 10px;
+  cursor:pointer;
+  font-size:12px;
+}
+.clean-empty {
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:24px;
+  color:var(--muted);
+  background:rgba(255,255,255,.03);
+}
+@media(max-width:760px){
+  .clean-photo-memory{padding:18px;border-radius:22px}
+  .clean-photo-memory h2{font-size:34px}
+  .clean-memory-form{grid-template-columns:1fr}
+  .clean-memory-gallery{grid-template-columns:1fr}
+  .clean-memory-card img,.clean-memory-card video{height:230px}
+}
+</style>
+
 </head><body>
 
 <section class="cover clean-image2-cover" id="cover">
@@ -1380,7 +1592,7 @@ display:none !important;
 
   <section class="feature-hero">
     <div>
-      <small>LIVE TRIP STATUS</small>
+      <small></small>
       <h2 id="countdown-title"></h2>
       <p id="countdown-copy">Calculating your timeline…</p>
     </div>
@@ -1751,7 +1963,7 @@ document.addEventListener('DOMContentLoaded', setupProgressTracking);
     const end = new Date('2026-07-01T23:59:59');
     const now = new Date();
     let diff = start - now;
-    let title='', copy='Counting down to departure.';
+    let title='', copy='';
     let tripDay='--';
     if(now >= start && now <= end){
       diff = end - now;
@@ -2660,8 +2872,7 @@ window.cloudSignOut = async function(){
     controls.className='photo-day-controls';
     controls.id='photo-day-controls-v4';
     controls.innerHTML=`
-      <h2>Photo Memory System</h2>
-      <p class="sub">Save photos by chapter, day, and exact place.</p>
+      
       <div class="grid">
         <select id="photoMemoryChapter">
           <option>Chapter 1</option><option>Chapter 2</option><option>Chapter 3</option><option>Final Chapter</option>
@@ -2991,6 +3202,227 @@ document.addEventListener('DOMContentLoaded',()=>{
  const countBtn=[...document.querySelectorAll('button')].find(b=>(b.textContent||'').toLowerCase().includes('count'));
  if(countBtn) countBtn.remove();
 });
+</script>
+
+
+<script>
+/* === CLEAN PHOTO MEMORY REBUILD === */
+(function(){
+  const MEMORY_KEY = "ug26_clean_photo_memories_v1";
+
+  const LOCATIONS = [
+    "Kampala Central",
+    "Acacia Mall",
+    "Nakasero",
+    "Guvnor Kampala",
+    "Mezo Noir",
+    "Ndere Cultural Centre",
+    "Kasubi Tombs",
+    "Jinja / Source of the Nile",
+    "Busiika Go Kart",
+    "Mabira Forest",
+    "Murchison Falls",
+    "Entebbe Airport",
+    "Aero Beach Entebbe",
+    "Kampala Street Food",
+    "Kampala Night Bars",
+    "Custom Location"
+  ];
+
+  function readMemories(){
+    try { return JSON.parse(localStorage.getItem(MEMORY_KEY) || "[]"); }
+    catch(e){ return []; }
+  }
+
+  function writeMemories(items){
+    localStorage.setItem(MEMORY_KEY, JSON.stringify(items));
+    try { localStorage.setItem("ug26_photos_v2", JSON.stringify(items)); } catch(e){}
+  }
+
+  function fileToDataURL(file){
+    return new Promise((resolve,reject)=>{
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function options(list){
+    return list.map(x=>`<option value="${x}">${x}</option>`).join("");
+  }
+
+  function dayOptions(){
+    return Array.from({length:22},(_,i)=>`<option value="Day ${i+1}">Day ${i+1}</option>`).join("");
+  }
+
+  function memoryHTML(){
+    return `
+      <div class="clean-photo-memory">
+        <h2>PHOTO MEMORIES</h2>
+        <p class="memory-sub">Save each memory by chapter, day, exact location, caption, photos, or short videos.</p>
+
+        <div class="clean-memory-form">
+          <div class="clean-memory-field">
+            <label>Chapter</label>
+            <select id="cleanMemoryChapter">
+              <option>Chapter 1</option>
+              <option>Chapter 2</option>
+              <option>Chapter 3</option>
+              <option>Final Chapter</option>
+            </select>
+          </div>
+
+          <div class="clean-memory-field">
+            <label>Day</label>
+            <select id="cleanMemoryDay">${dayOptions()}</select>
+          </div>
+
+          <div class="clean-memory-field">
+            <label>Location</label>
+            <select id="cleanMemoryLocation">${options(LOCATIONS)}</select>
+          </div>
+
+          <div class="clean-memory-field clean-memory-wide">
+            <label>Caption</label>
+            <input id="cleanMemoryCaption" placeholder="e.g. First night in Kampala with the crew">
+          </div>
+
+          <div class="clean-memory-wide clean-upload-box">
+            <div>
+              <b>Photos / Videos</b>
+              <p style="margin:4px 0 0;color:var(--muted)">Choose one or multiple files. They save on this browser and sync metadata through Cloud Sync.</p>
+            </div>
+            <input id="cleanMemoryFiles" type="file" accept="image/*,video/*" multiple>
+          </div>
+        </div>
+
+        <button class="clean-save-memory" onclick="saveCleanMemory()">Save Memory</button>
+
+        <div class="clean-memory-divider"></div>
+
+        <div class="clean-memory-toolbar">
+          <h3>Saved Memories</h3>
+          <select id="cleanMemoryFilter" onchange="renderCleanMemories()">
+            <option value="all">All Memories</option>
+            <option>Chapter 1</option>
+            <option>Chapter 2</option>
+            <option>Chapter 3</option>
+            <option>Final Chapter</option>
+          </select>
+        </div>
+
+        <div id="cleanMemoryGallery" class="clean-memory-gallery"></div>
+      </div>
+    `;
+  }
+
+  window.rebuildPhotoMemoriesClean = function(){
+    const panel = document.getElementById("feature-memories") || document.getElementById("memories") || document.querySelector('[id*="memories"]');
+    if(!panel) return;
+
+    const card = panel.querySelector(".feature-card") || panel;
+    if(card.dataset.cleanMemoryBuilt === "1") {
+      renderCleanMemories();
+      return;
+    }
+
+    card.dataset.cleanMemoryBuilt = "1";
+    card.innerHTML = memoryHTML();
+    renderCleanMemories();
+  };
+
+  window.saveCleanMemory = async function(){
+    const chapter = document.getElementById("cleanMemoryChapter")?.value || "Chapter 1";
+    const day = document.getElementById("cleanMemoryDay")?.value || "Day 1";
+    const location = document.getElementById("cleanMemoryLocation")?.value || "Kampala Central";
+    const caption = document.getElementById("cleanMemoryCaption")?.value.trim() || "Untitled Memory";
+    const files = Array.from(document.getElementById("cleanMemoryFiles")?.files || []);
+
+    if(!files.length){
+      alert("Choose at least one photo or video first.");
+      return;
+    }
+
+    const current = readMemories();
+
+    for(const file of files){
+      const data = await fileToDataURL(file);
+      current.unshift({
+        id: "mem_" + Date.now() + "_" + Math.random().toString(16).slice(2),
+        chapter,
+        day,
+        location,
+        caption,
+        type: file.type.startsWith("video") ? "video" : "image",
+        name: file.name,
+        data,
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    writeMemories(current);
+    document.getElementById("cleanMemoryCaption").value = "";
+    document.getElementById("cleanMemoryFiles").value = "";
+    renderCleanMemories();
+
+    if(typeof window.openCloudSyncFromArchive === "function"){
+      // no popup, just allow no-refresh sync listener to pick up localStorage
+      localStorage.setItem("ug26-last-memory-save", String(Date.now()));
+    }
+  };
+
+  window.deleteCleanMemory = function(id){
+    if(!confirm("Delete this memory from this browser?")) return;
+    writeMemories(readMemories().filter(x=>x.id !== id));
+    renderCleanMemories();
+  };
+
+  window.renderCleanMemories = function(){
+    const gallery = document.getElementById("cleanMemoryGallery");
+    if(!gallery) return;
+
+    const filter = document.getElementById("cleanMemoryFilter")?.value || "all";
+    let items = readMemories();
+
+    if(filter !== "all") items = items.filter(x=>x.chapter === filter);
+
+    if(!items.length){
+      gallery.innerHTML = `<div class="clean-empty">No memories saved yet. Add photos or videos above.</div>`;
+      return;
+    }
+
+    gallery.innerHTML = items.map(item=>{
+      const media = item.type === "video"
+        ? `<video src="${item.data}" controls></video>`
+        : `<img src="${item.data}" alt="${item.caption || "Memory"}">`;
+
+      return `
+        <article class="clean-memory-card">
+          ${media}
+          <div class="clean-memory-card-body">
+            <b>${item.caption || "Untitled Memory"}</b>
+            <small>${item.chapter} • ${item.day} • ${item.location}</small>
+            <p>${new Date(item.createdAt).toLocaleString()}</p>
+            <div class="clean-memory-actions">
+              <button onclick="deleteCleanMemory('${item.id}')">Delete</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join("");
+  };
+
+  const oldShowFeature = window.showFeature;
+  window.showFeature = function(id, btn){
+    if(typeof oldShowFeature === "function") oldShowFeature(id, btn);
+    if(id === "memories") setTimeout(rebuildPhotoMemoriesClean, 60);
+  };
+
+  document.addEventListener("DOMContentLoaded", function(){
+    setTimeout(rebuildPhotoMemoriesClean, 400);
+  });
+})();
 </script>
 
 </body></html>
